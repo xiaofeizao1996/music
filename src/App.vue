@@ -1,28 +1,73 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Table :columns="columns" :data="voiceList" />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { getVoiceList } from "./api/voice";
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  name: "App",
+  data() {
+    return {
+      columns: [
+        {
+          title: "名字",
+          align: "center",
+          key: "name",
+        },
+        {
+          title: "封面",
+          align: "center",
+          key: "cover",
+          render: (h, { row }) => {
+            return h(
+              "img",
+              {
+                style: {
+                  width: "100px",
+                  height: "100px",
+                  borderRadius: "50%",
+                },
+                attrs: {
+                  src: `//${row.cover}`,
+                },
+              },
+              []
+            );
+          },
+        },
+        {
+          title: "voiceRealUrl",
+          align: "center",
+          key: "voiceRealUrl",
+          render: (h, { row }) => {
+            return h(
+              "audio",
+              {
+                attrs: {
+                  controls: true,
+                  src: row.voiceRealUrl,
+                },
+              },
+              []
+            );
+          },
+        },
+      ],
+      voiceList: [],
+    };
+  },
+  async mounted() {
+    const { data } = await getVoiceList();
+    console.log("voiceList: ", data);
+    this.voiceList = data;
+  },
+};
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
